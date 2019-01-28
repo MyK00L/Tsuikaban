@@ -133,7 +133,7 @@ int main()
 		window.setFramerateLimit(30);
 		window.setKeyRepeatEnabled(0);
 
-		float side = std::min((float)window.getSize().x / (float)level.m.size(), (float)window.getSize().y / (float)level.m[0].size());
+		float side = std::min((float)window.getSize().x / (float)level.m[0].size(), (float)window.getSize().y / (float)level.m.size());
 		groundSprite.setScale(side/groundTexture.getSize().x,side / groundTexture.getSize().y);
 		wallSprite.setScale(side / wallTexture.getSize().x, side / wallTexture.getSize().y);
 		playerSprite.setScale(side / playerTexture.getSize().x, side / playerTexture.getSize().y);
@@ -150,7 +150,7 @@ int main()
 					window.close();
 				}
 				else if(event.type == sf::Event::Resized){
-					side = std::min((float)event.size.width / (float)level.m.size(), (float)event.size.height / (float)level.m[0].size());
+					side = std::min((float)event.size.width / (float)level.m[0].size(), (float)event.size.height / (float)level.m.size());
 					groundSprite.setScale(side / groundTexture.getSize().x, side / groundTexture.getSize().y);
 					wallSprite.setScale(side / wallTexture.getSize().x, side / wallTexture.getSize().y);
 					playerSprite.setScale(side / playerTexture.getSize().x, side / playerTexture.getSize().y);
