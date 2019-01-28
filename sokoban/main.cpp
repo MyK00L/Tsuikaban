@@ -132,66 +132,79 @@ int main()
 		sf::RenderWindow window(sf::VideoMode(512,512), "Level " + std::to_string(ln));
 		window.setFramerateLimit(30);
 		window.setKeyRepeatEnabled(0);
-		float side = std::min(window.getSize().y / level.m.size(), window.getSize().x / level.m[0].size());
-		groundSprite.setScale({ side / groundTexture.getSize().x, side / groundTexture.getSize().y });
-		wallSprite.setScale({ side / wallTexture.getSize().x, side / wallTexture.getSize().y });
-		playerSprite.setScale({ side / playerTexture.getSize().x, side / playerTexture.getSize().y });
-		cubeSprite.setScale({ side / cubeTexture.getSize().x, side / cubeTexture.getSize().y });
-		doorSprite.setScale({ side / doorTexture.getSize().x, side / doorTexture.getSize().y });
 
+		float side = std::min((float)window.getSize().x / (float)level.m.size(), (float)window.getSize().y / (float)level.m[0].size());
+		groundSprite.setScale(side/groundTexture.getSize().x,side / groundTexture.getSize().y);
+		wallSprite.setScale(side / wallTexture.getSize().x, side / wallTexture.getSize().y);
+		playerSprite.setScale(side / playerTexture.getSize().x, side / playerTexture.getSize().y);
+		cubeSprite.setScale(side / cubeTexture.getSize().x, side / cubeTexture.getSize().y);
+		doorSprite.setScale(side / doorTexture.getSize().x, side / doorTexture.getSize().y);
 		cubeTxt.setCharacterSize(side/2.5f);
+		window.setView(sf::View(sf::FloatRect(0.0f,0.0f,window.getSize().x,window.getSize().y)));
 
 		while (window.isOpen()) {
+			//Poll all events
 			sf::Event event;
 			while (window.pollEvent(event)) {
 				if (event.type == sf::Event::Closed) {
 					window.close();
 				}
+				else if(event.type == sf::Event::Resized){
+					side = std::min((float)event.size.width / (float)level.m.size(), (float)event.size.height / (float)level.m[0].size());
+					groundSprite.setScale(side / groundTexture.getSize().x, side / groundTexture.getSize().y);
+					wallSprite.setScale(side / wallTexture.getSize().x, side / wallTexture.getSize().y);
+					playerSprite.setScale(side / playerTexture.getSize().x, side / playerTexture.getSize().y);
+					cubeSprite.setScale(side / cubeTexture.getSize().x, side / cubeTexture.getSize().y);
+					doorSprite.setScale(side / doorTexture.getSize().x, side / doorTexture.getSize().y);
+					cubeTxt.setCharacterSize(side/2.5f);
+					window.setView(sf::View(sf::FloatRect(0.0f,0.0f,event.size.width,event.size.height)));
+				}
 				else if (event.type == sf::Event::KeyPressed) {
-					if (event.key.code == sf::Keyboard::Left) {
+					if (event.key.code == sf::Keyboard::Left || event.key.code == sf::Keyboard::A) {
 						level.move(level.player.pos, { -1,0 });
 					}
-					if (event.key.code == sf::Keyboard::Right) {
+					if (event.key.code == sf::Keyboard::Right || event.key.code == sf::Keyboard::D) {
 						level.move(level.player.pos, { 1,0 });
 					}
-					if (event.key.code == sf::Keyboard::Up) {
+					if (event.key.code == sf::Keyboard::Up || event.key.code == sf::Keyboard::W) {
 						level.move(level.player.pos, { 0,-1 });
 					}
-					if (event.key.code == sf::Keyboard::Down) {
+					if (event.key.code == sf::Keyboard::Down || event.key.code == sf::Keyboard::S) {
 						level.move(level.player.pos, { 0,1 });
 					}
 				}
 			}
+
 			window.clear();
 			//draw walls and ground
 			for (int y = 0; y < (int)level.m.size(); ++y) {
 				for (int x = 0; x < (int)level.m[y].size(); ++x) {
 					if (level.m[y][x] == '.') {
-						groundSprite.setPosition({ x*side,y*side });
+						groundSprite.setPosition((float)x*side,(float)y*side);
 						window.draw(groundSprite);
 					}
 					else if (level.m[y][x] == '#') {
-						wallSprite.setPosition({ x*side,y*side });
+						wallSprite.setPosition((float)x*side,(float)y*side);
 						window.draw(wallSprite);
 					}
 					else if (level.m[y][x] == 'D') {
-						doorSprite.setPosition({ x*side,y*side });
+						doorSprite.setPosition((float)x*side,(float)y*side);
 						window.draw(doorSprite);
 					}
 				}
 			}
 			//draw cubes
 			for (auto& i : level.cubes) {
-				cubeSprite.setPosition({ i.pos.x*side,i.pos.y*side });
+				cubeSprite.setPosition((float)i.pos.x*side,(float)i.pos.y*side);
 				cubeSprite.setColor(i.col);
 				window.draw(cubeSprite);
 				cubeTxt.setString(std::to_string(i.n));
-				cubeTxt.setOrigin(cubeTxt.getGlobalBounds().width/2.0f, cubeTxt.getGlobalBounds().height/2.0f);
-				cubeTxt.setPosition({ ((float)i.pos.x + 0.45f)*side,((float)i.pos.y + 0.4f)*side });
+				cubeTxt.setOrigin((float)cubeTxt.getGlobalBounds().width/2.0f, (float)cubeTxt.getGlobalBounds().height/2.0f);
+				cubeTxt.setPosition(((float)i.pos.x + 0.45f)*side,((float)i.pos.y + 0.4f)*side);
 				window.draw(cubeTxt);
 			}
 			//draw player
-			playerSprite.setPosition({ level.player.pos.x*side,level.player.pos.y*side });
+			playerSprite.setPosition((float)level.player.pos.x*side,(float)level.player.pos.y*side);
 			window.draw(playerSprite);
 			window.display();
 

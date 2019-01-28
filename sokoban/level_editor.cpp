@@ -125,16 +125,16 @@ int main()
 		sf::RenderWindow window(sf::VideoMode(512,512), "Level " + std::to_string(ln));
 		window.setFramerateLimit(30);
 		window.setKeyRepeatEnabled(0);
-		float side = std::min(window.getSize().y / level.m.size(), window.getSize().x / level.m[0].size());
-		groundSprite.setScale({ side / groundTexture.getSize().x, side / groundTexture.getSize().y });
-		wallSprite.setScale({ side / wallTexture.getSize().x, side / wallTexture.getSize().y });
-		playerSprite.setScale({ side / playerTexture.getSize().x, side / playerTexture.getSize().y });
-		cubeSprite.setScale({ side / cubeTexture.getSize().x, side / cubeTexture.getSize().y });
-		doorSprite.setScale({ side / doorTexture.getSize().x, side / doorTexture.getSize().y });
 
-		cursorSprite.setScale({side/(cubeTexture.getSize().x*2.0f),side/(cubeTexture.getSize().y*2.0f)});
-
+		float side = std::min((float)window.getSize().x / (float)level.m.size(), (float)window.getSize().y / (float)level.m[0].size());
+		groundSprite.setScale(side/groundTexture.getSize().x,side / groundTexture.getSize().y);
+		wallSprite.setScale(side / wallTexture.getSize().x, side / wallTexture.getSize().y);
+		playerSprite.setScale(side / playerTexture.getSize().x, side / playerTexture.getSize().y);
+		cubeSprite.setScale(side / cubeTexture.getSize().x, side / cubeTexture.getSize().y);
+		doorSprite.setScale(side / doorTexture.getSize().x, side / doorTexture.getSize().y);
+		cursorSprite.setScale(side / (cubeTexture.getSize().x*2.0f), side/(cubeTexture.getSize().y*2.0f));
 		cubeTxt.setCharacterSize(side/2.5f);
+		window.setView(sf::View(sf::FloatRect(0.0f,0.0f,window.getSize().x,window.getSize().y)));
 
 		sf::Vector2i cursor = {0,0};
 
@@ -143,6 +143,17 @@ int main()
 			while (window.pollEvent(event)) {
 				if (event.type == sf::Event::Closed) {
 					window.close();
+				}
+				else if(event.type == sf::Event::Resized){
+					side = std::min((float)event.size.width / (float)level.m.size(), (float)event.size.height / (float)level.m[0].size());
+					groundSprite.setScale(side / groundTexture.getSize().x, side / groundTexture.getSize().y);
+					wallSprite.setScale(side / wallTexture.getSize().x, side / wallTexture.getSize().y);
+					playerSprite.setScale(side / playerTexture.getSize().x, side / playerTexture.getSize().y);
+					cubeSprite.setScale(side / cubeTexture.getSize().x, side / cubeTexture.getSize().y);
+					doorSprite.setScale(side / doorTexture.getSize().x, side / doorTexture.getSize().y);
+					cursorSprite.setScale(side / (cubeTexture.getSize().x*2.0f), side/(cubeTexture.getSize().y*2.0f));
+					cubeTxt.setCharacterSize(side/2.5f);
+					window.setView(sf::View(sf::FloatRect(0.0f,0.0f,event.size.width,event.size.height)));
 				}
 				else if (event.type == sf::Event::KeyPressed) {
 					if (event.key.code == sf::Keyboard::Left) {
