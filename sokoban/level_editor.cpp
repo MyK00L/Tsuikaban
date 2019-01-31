@@ -180,7 +180,7 @@ int main()
 					if (event.key.code == sf::Keyboard::P){
 						level.player.pos=cursor;
 					}
-					if (event.key.code == sf::Keyboard::Add){
+					if (event.key.code == sf::Keyboard::Add || event.key.code == sf::Keyboard::Equal){
 						for(auto & i:level.cubes){
 							if(i.pos==cursor)i.n++;
 						}
