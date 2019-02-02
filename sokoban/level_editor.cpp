@@ -76,7 +76,7 @@ int main()
 		&playerTexture.loadFromFile("res/player.png")
 		&cubeTexture.loadFromFile("res/cube.png")
 		&doorTexture.loadFromFile("res/door.png")
-		&font.loadFromFile("res/DejaVuSansMono.ttf"))) {
+		&font.loadFromFile("res/Hack-Regular.ttf"))) {
 		return 1;
 	}
 	sf::Sprite groundSprite(groundTexture), wallSprite(wallTexture), playerSprite(playerTexture), cubeSprite(cubeTexture), doorSprite(doorTexture), cursorSprite(cubeTexture);
@@ -242,7 +242,7 @@ int main()
 				window.draw(cubeSprite);
 				cubeTxt.setString(std::to_string(i.n));
 				cubeTxt.setOrigin(cubeTxt.getGlobalBounds().width/2.0f, cubeTxt.getGlobalBounds().height/2.0f);
-				cubeTxt.setPosition({ ((float)i.pos.x + 0.45f)*side,((float)i.pos.y + 0.4f)*side });
+				cubeTxt.setPosition({ ((float)i.pos.x + 0.475f)*side,((float)i.pos.y + 0.4f)*side });
 				window.draw(cubeTxt);
 			}
 			//draw player
