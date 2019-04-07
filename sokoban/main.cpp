@@ -280,14 +280,14 @@ int main()
 
 			if(level.m[level.player.pos.y][level.player.pos.x]=='D'){
 				if(ln>=ll){
-					out.open("res/save.dat");
 					in.open("res/levels/level"+std::to_string(ln+1)+".txt");
 					if(in.good()){
 						ll=ln+1;
-						out<<ln+1<<std::endl;
+						out.open("res/save.dat");
+						out<<ll<<std::endl;
+						out.close();
 						in.close();
 					}
-					out.close();
 				}
 				ln=-1;
 				justChangedState=1;
