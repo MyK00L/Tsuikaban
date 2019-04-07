@@ -134,6 +134,7 @@ int main()
 	while (window.isOpen()) {
 		if(state==State::MENU){
 			if(justChangedState){
+				window.setTitle("Tsuikaban - select a level");
 				side = std::min((float)window.getSize().x / (float)menuLevel.m[0].size(), (float)window.getSize().y / (float)menuLevel.m.size());
 				groundSprite.setScale(side/groundTexture.getSize().x,side / groundTexture.getSize().y);
 				wallSprite.setScale(side / wallTexture.getSize().x, side / wallTexture.getSize().y);
@@ -161,18 +162,18 @@ int main()
 				} else if(event.type == sf::Event::MouseButtonReleased){
 					sf::Vector2i mpos = sf::Mouse::getPosition(window);
 					for(auto& i : menuLevel.cubes) {
-						if((float)i.pos.x*side<mpos.x && mpos.x<(float)(1+i.pos.x)*side && (float)i.pos.y*side<mpos.y && mpos.y<(float)(1+i.pos.y)*side){
+						if(i.n<=ll && (float)i.pos.x*side<mpos.x && mpos.x<(float)(1+i.pos.x)*side && (float)i.pos.y*side<mpos.y && mpos.y<(float)(1+i.pos.y)*side){
 							ln=i.n;
 						}
 					}
 				}
 			}
 
-			window.clear(sf::Color(128,64,32));
+			window.clear(sf::Color(0,0,0));
 			//draw cubes
 			for (auto& i : menuLevel.cubes) {
 				cubeSprite.setPosition((float)i.pos.x*side,(float)i.pos.y*side);
-				cubeSprite.setColor(i.n<=ll?sf::Color(255,255,255):sf::Color(64,64,64));
+				cubeSprite.setColor(i.n<=ll?sf::Color(255,255,255):sf::Color(96,96,96));
 				window.draw(cubeSprite);
 				cubeTxt.setString(std::to_string(i.n));
 				cubeTxt.setOrigin((float)cubeTxt.getGlobalBounds().width/2.0f, (float)cubeTxt.getGlobalBounds().height/2.0f);
