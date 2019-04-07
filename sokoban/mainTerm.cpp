@@ -81,17 +81,8 @@ std::ifstream& operator>>(std::ifstream& in, Level& lvl) {
 	return in;
 }
 
-enum State{
-	DEFAULT,
-	MENU,
-	LEVEL
-};
-
 int main()
 {
-	State state = State::MENU;
-	bool justChangedState=1;
-
 	std::ios_base::sync_with_stdio(0);
 	sf::Texture groundTexture, wallTexture, playerTexture, cubeTexture, doorTexture;
 	sf::Font font;
@@ -106,109 +97,52 @@ int main()
 	sf::Sprite groundSprite(groundTexture), wallSprite(wallTexture), playerSprite(playerTexture), cubeSprite(cubeTexture), doorSprite(doorTexture);
 	sf::Text cubeTxt("0", font, 16);
 	cubeTxt.setFillColor({ 0,0,0 });
-	float side;
+
 	Level level;
-	Level menuLevel;
 
-	sf::RenderWindow window(sf::VideoMode(512,512), "Tsuikaban");
-	window.setFramerateLimit(30);
-	window.setKeyRepeatEnabled(0);
+	while (1) {
+		in.open("res/save.dat");
+		int ll = 0;
+		if (!in.good()) {
+			in.close();
+			out.open("res/save.dat");
+			out << 0 << std::endl;
+			out.close();
+		}
+		else {
+			in >> ll;
+			in.close();
+		}
+		std::cout << "Last available level: " << ll << std::endl;
+		int ln = ll;
+		do {
+			std::cout << "select level: ";
+			std::cin >> ln;
+		} while (ln > ll || ln<0);
 
-	int ll=0,ln=-1;
-	in.open("res/save.dat");
-	if (!in.good()) {
+		in.open("res/levels/level"+std::to_string(ln)+".txt");
+		if(!in.good()){
+			std::cout<<"level "<<ln<<" is not an available level"<<std::endl;
+			std::cout<<"closing the game..."<<std::endl;
+			return 0;
+		}
+		in >> level;
 		in.close();
-		out.open("res/save.dat");
-		out << 0 << std::endl;
-		out.close();
-	}
-	else {
-		in >> ll;
-		in.close();
-	}
 
-	in.open("res/menuLevel.txt");
-	in>>menuLevel;
-	in.close();
+		sf::RenderWindow window(sf::VideoMode(512,512), "Level " + std::to_string(ln));
+		window.setFramerateLimit(30);
+		window.setKeyRepeatEnabled(0);
 
-	while (window.isOpen()) {
-		if(state==State::MENU){
-			if(justChangedState){
-				side = std::min((float)window.getSize().x / (float)menuLevel.m[0].size(), (float)window.getSize().y / (float)menuLevel.m.size());
-				groundSprite.setScale(side/groundTexture.getSize().x,side / groundTexture.getSize().y);
-				wallSprite.setScale(side / wallTexture.getSize().x, side / wallTexture.getSize().y);
-				playerSprite.setScale(side / playerTexture.getSize().x, side / playerTexture.getSize().y);
-				cubeSprite.setScale(side / cubeTexture.getSize().x, side / cubeTexture.getSize().y);
-				doorSprite.setScale(side / doorTexture.getSize().x, side / doorTexture.getSize().y);
-				cubeTxt.setCharacterSize(side/2.5f);
-				window.setView(sf::View(sf::FloatRect(0.0f,0.0f,window.getSize().x,window.getSize().y)));
-				justChangedState=0;
-			}
-			sf::Event event;
-			while (window.pollEvent(event)) {
-				if (event.type == sf::Event::Closed) {
-					window.close();
-				}
-				else if(event.type == sf::Event::Resized){
-					side = std::min((float)event.size.width / (float)menuLevel.m[0].size(), (float)event.size.height / (float)menuLevel.m.size());
-					groundSprite.setScale(side / groundTexture.getSize().x, side / groundTexture.getSize().y);
-					wallSprite.setScale(side / wallTexture.getSize().x, side / wallTexture.getSize().y);
-					playerSprite.setScale(side / playerTexture.getSize().x, side / playerTexture.getSize().y);
-					cubeSprite.setScale(side / cubeTexture.getSize().x, side / cubeTexture.getSize().y);
-					doorSprite.setScale(side / doorTexture.getSize().x, side / doorTexture.getSize().y);
-					cubeTxt.setCharacterSize(side/2.5f);
-					window.setView(sf::View(sf::FloatRect(0.0f,0.0f,event.size.width,event.size.height)));
-				} else if(event.type == sf::Event::MouseButtonReleased){
-					sf::Vector2i mpos = sf::Mouse::getPosition(window);
-					for(auto& i : menuLevel.cubes) {
-						if((float)i.pos.x*side<mpos.x && mpos.x<(float)(1+i.pos.x)*side && (float)i.pos.y*side<mpos.y && mpos.y<(float)(1+i.pos.y)*side){
-							ln=i.n;
-						}
-					}
-				}
-			}
+		float side = std::min((float)window.getSize().x / (float)level.m[0].size(), (float)window.getSize().y / (float)level.m.size());
+		groundSprite.setScale(side/groundTexture.getSize().x,side / groundTexture.getSize().y);
+		wallSprite.setScale(side / wallTexture.getSize().x, side / wallTexture.getSize().y);
+		playerSprite.setScale(side / playerTexture.getSize().x, side / playerTexture.getSize().y);
+		cubeSprite.setScale(side / cubeTexture.getSize().x, side / cubeTexture.getSize().y);
+		doorSprite.setScale(side / doorTexture.getSize().x, side / doorTexture.getSize().y);
+		cubeTxt.setCharacterSize(side/2.5f);
+		window.setView(sf::View(sf::FloatRect(0.0f,0.0f,window.getSize().x,window.getSize().y)));
 
-			window.clear(sf::Color(128,64,32));
-			//draw cubes
-			for (auto& i : menuLevel.cubes) {
-				cubeSprite.setPosition((float)i.pos.x*side,(float)i.pos.y*side);
-				cubeSprite.setColor(i.n<=ll?sf::Color(255,255,255):sf::Color(64,64,64));
-				window.draw(cubeSprite);
-				cubeTxt.setString(std::to_string(i.n));
-				cubeTxt.setOrigin((float)cubeTxt.getGlobalBounds().width/2.0f, (float)cubeTxt.getGlobalBounds().height/2.0f);
-				cubeTxt.setPosition(((float)i.pos.x + 0.475f)*side,((float)i.pos.y + 0.4f)*side);
-				window.draw(cubeTxt);
-			}
-			window.display();
-
-			if(ln!=-1){
-				state=State::LEVEL;
-				justChangedState=1;
-			}
-
-		} else if(state==State::LEVEL){
-			if(justChangedState){
-				in.open("res/levels/level"+std::to_string(ln)+".txt");
-				if(!in.good()){
-					std::cerr<<"level "<<ln<<" is not an available level"<<std::endl;
-					std::cerr<<"closing the game..."<<std::endl;
-					return 0;
-				}
-				in >> level;
-				in.close();
-
-				window.setTitle("Level "+std::to_string(ln));
-
-				side = std::min((float)window.getSize().x / (float)level.m[0].size(), (float)window.getSize().y / (float)level.m.size());
-				groundSprite.setScale(side/groundTexture.getSize().x,side / groundTexture.getSize().y);
-				wallSprite.setScale(side / wallTexture.getSize().x, side / wallTexture.getSize().y);
-				playerSprite.setScale(side / playerTexture.getSize().x, side / playerTexture.getSize().y);
-				cubeSprite.setScale(side / cubeTexture.getSize().x, side / cubeTexture.getSize().y);
-				doorSprite.setScale(side / doorTexture.getSize().x, side / doorTexture.getSize().y);
-				cubeTxt.setCharacterSize(side/2.5f);
-				window.setView(sf::View(sf::FloatRect(0.0f,0.0f,window.getSize().x,window.getSize().y)));
-				justChangedState=0;
-			}
+		while (window.isOpen()) {
 			//Poll all events
 			sf::Event event;
 			while (window.pollEvent(event)) {
@@ -237,10 +171,6 @@ int main()
 					}
 					if (event.key.code == sf::Keyboard::Down || event.key.code == sf::Keyboard::S) {
 						level.move(level.player.pos, { 0,1 });
-					} else if (event.key.code == sf::Keyboard::Escape){
-						ln=-1;
-						justChangedState=1;
-						state=State::MENU;
 					}
 				}
 			}
@@ -279,19 +209,13 @@ int main()
 			window.display();
 
 			if(level.m[level.player.pos.y][level.player.pos.x]=='D'){
+				std::cout << "you won!" << std::endl;
 				if(ln>=ll){
 					out.open("res/save.dat");
-					in.open("res/levels/level"+std::to_string(ln+1)+".txt");
-					if(in.good()){
-						ll=ln+1;
-						out<<ln+1<<std::endl;
-						in.close();
-					}
+					out<<ln+1<<std::endl;
 					out.close();
 				}
-				ln=-1;
-				justChangedState=1;
-				state=State::MENU;
+				window.close();
 			}
 		}
 	}
