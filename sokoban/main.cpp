@@ -198,7 +198,7 @@ int main()
 				in >> level;
 				in.close();
 
-				window.setTitle("Level "+std::to_string(ln));
+				window.setTitle("Tsuikaban - level "+std::to_string(ln));
 
 				side = std::min((float)window.getSize().x / (float)level.m[0].size(), (float)window.getSize().y / (float)level.m.size());
 				groundSprite.setScale(side/groundTexture.getSize().x,side / groundTexture.getSize().y);

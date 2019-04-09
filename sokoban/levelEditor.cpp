@@ -84,45 +84,39 @@ int main()
 	cubeTxt.setFillColor({ 0,0,0 });
 
 	Level level;
+	std::string fileName;
 
 	while (1) {
-		in.open("res/save.dat");
-		int ll = 0;
-		if (!in.good()) {
-			in.close();
-			out.open("res/save.dat");
-			out << 0 << std::endl;
-			out.close();
-		}
-		else {
-			in >> ll;
-			in.close();
-		}
-		std::cout << "Last available level: " << ll << std::endl;
-		int ln = ll;
-		do {
-			std::cout << "select level: ";
-			std::cin >> ln;
-		} while (ln > ll+1 || ln<0);
-
-		in.open("res/levels/level"+std::to_string(ln)+".txt");
+	levelGet:
+		std::cout<<"File you want to edit: ";
+		std::cin>>fileName;
+		in.open(fileName);
 		if(!in.good()){
-			in.close();
-			out.open("res/levels/level"+std::to_string(ln)+".txt");
-			out<<16<<' '<<16<<'\n';
-			for(int y=0; y<16; ++y){
-				for(int x=0; x<16; ++x){
-					out<<'.';
-				}out<<'\n';
-			}
-			out<<1<<' '<<1<<'\n'<<0<<std::endl;
-			out.close();
-			in.open("res/levels/level"+std::to_string(ln)+".txt");
+			std::cout<<"File "<<fileName<<"does not exist.\nDo you wish to create a new level(y/N)?"<<std::endl;
+			char ch;
+			std::cin>>ch;
+			if(ch=='y'){
+				int h,w;
+				std::cout<<"Level height: "<<std::flush;
+				std::cin>>h;
+				std::cout<<"Level width: "<<std::flush;
+				std::cin>>w;
+				out.open(fileName);
+				out<<h<<' '<<w<<'\n';
+				for(int y=0; y<h; ++y){
+					for(int x=0; x<w; ++x){
+						out<<'.';
+					}out<<'\n';
+				}
+				out<<"0 0\n0"<<std::endl;
+				out.close();
+				in.open(fileName);
+			} else goto levelGet;
 		}
-		in >> level;
+		in>>level;
 		in.close();
-
-		sf::RenderWindow window(sf::VideoMode(512,512), "Level " + std::to_string(ln));
+		
+		sf::RenderWindow window(sf::VideoMode(512,512), "Tsuikaban - level editor");
 		window.setFramerateLimit(30);
 		window.setKeyRepeatEnabled(0);
 
@@ -256,7 +250,7 @@ int main()
 		char save='y';
 		std::cin>>save;
 		if(save!='n'){
-			out.open("res/levels/level"+std::to_string(ln)+".txt");
+			out.open(fileName);
 			out<<level;
 			out.close();
 		}
