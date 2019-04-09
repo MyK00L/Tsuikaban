@@ -88,11 +88,11 @@ int main()
 
 	while (1) {
 	levelGet:
-		std::cout<<"File you want to edit: ";
+		std::cout<<"File you want to edit: "<<std::flush;
 		std::cin>>fileName;
 		in.open(fileName);
 		if(!in.good()){
-			std::cout<<"File "<<fileName<<"does not exist.\nDo you wish to create a new level(y/N)?"<<std::endl;
+			std::cout<<"File "<<fileName<<" does not exist.\nDo you wish to create a new level(y/N)?"<<std::endl;
 			char ch;
 			std::cin>>ch;
 			if(ch=='y'){
