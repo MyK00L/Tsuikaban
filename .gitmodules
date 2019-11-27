@@ -1,0 +1,3 @@
+[submodule "src/res/levels"]
+	path = src/res/levels
+	url = https://github.com/eutampieri/Tsuikaban-levels
